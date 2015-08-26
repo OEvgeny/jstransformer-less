@@ -53,7 +53,8 @@ exports.render = function (str, options, locals) {
 
   options.syncImport = true;
 
-  str += parseLocals(locals);
+  if (locals != options)
+    str += parseLocals(locals);
 
   var result;
   less.render(str, options, function (err, res) {
@@ -79,7 +80,8 @@ exports.renderAsync = function (str, options, locals) {
     });
   }
 
-  str += parseLocals(locals);
+  if (locals != options)
+    str += parseLocals(locals);
 
   return less.render(str, options).then(function (res) {
     return {body: res.css, dependencies: res.imports};
@@ -91,7 +93,8 @@ exports.renderFile = function (filename, options, locals) {
   locals = locals || {};
   options.filename = path.resolve(filename);
   var str = fs.readFileSync(filename, 'utf8');
-  str += parseLocals(locals);
+  if (locals != options)
+    str += parseLocals(locals);
   return exports.render(str, options);
 };
 exports.renderFileAsync = function (filename, options, locals) {
@@ -99,7 +102,8 @@ exports.renderFileAsync = function (filename, options, locals) {
   locals = locals || {};
   options.filename = path.resolve(filename);
   return readFile(filename, 'utf8').then(function (str) {
-    str += parseLocals(locals);
+    if (locals != options)
+      str += parseLocals(locals);
     return exports.renderAsync(str, options);
   });
 };
